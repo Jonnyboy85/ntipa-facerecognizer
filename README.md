@@ -1,2 +1,2 @@
-ntipa-facerecognizer
-====================
+README for ntipaFacerecognizer
+==========================
