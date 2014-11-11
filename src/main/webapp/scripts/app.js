@@ -4,7 +4,7 @@
 
 var ntipafacerecognizerApp = angular.module('ntipafacerecognizerApp', ['http-auth-interceptor', 'tmh.dynamicLocale',
     'ngResource', 'ngRoute', 'ngCookies', 'ntipafacerecognizerAppUtils', 'pascalprecht.translate', 'truncate',
-    'webcam']);
+    'webcam','PhoneGap']);
 
 ntipafacerecognizerApp
     .config(function ($routeProvider, $httpProvider, $translateProvider, tmhDynamicLocaleProvider, USER_ROLES) {

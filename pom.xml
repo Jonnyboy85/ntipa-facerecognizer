@@ -249,6 +249,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+        <dependency>
+	        <groupId>com.ipublic.ntipa</groupId>
+			<artifactId>ntipa-face-rec</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        
     </dependencies>
     <build>
         <resources>

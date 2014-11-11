@@ -1,66 +1,68 @@
 <div>
 
-    <h2>Registrazione</h2>
+	<h2>Registrazione</h2>
 
-    <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#saveFaceModal" ng-click="clear()">
-        <span class="glyphicon glyphicon-flash"></span> Create a new Face
-    </button>
-    <div class="modal fade" id="saveFaceModal" tabindex="-1" role="dialog" aria-labelledby="myFaceLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form name="form" role="form" novalidate
-                      class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength"
-                      ng-submit="create()">
+	<button class="btn btn-primary btn-lg" data-toggle="modal"
+		data-target="#saveFaceModal" ng-click="clear()">
+		<span class="glyphicon glyphicon-flash"></span> Create a new Face
+	</button>
+	<div class="modal fade" id="saveFaceModal" tabindex="-1" role="dialog"
+		aria-labelledby="myFaceLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form name="form" role="form" novalidate
+					class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength"
+					ng-submit="create()">
 
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
-                                ng-click="clear()">&times;</button>
-                        <h4 class="modal-title" id="myFaceLabel">You smile!</h4>
-                    </div>
-                    <div class="modal-body">
-                    
-                     <!-- 
-        				
-        				<webcam on-stream="onStream(stream,video)"
-            on-error="onError(err)"
-            on-streaming="onSuccess(video)">
-        </webcam>
-        
-        				 -->
-                    
-                    
-                        <!--<div class="form-group">
-                            <label>ID</label>
-                            <input type="text" class="form-control" name="id"
-                                   ng-model="face.id" readonly>
-                        </div>
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true" ng-click="clear()">&times;</button>
+						<h4 class="modal-title" id="myFaceLabel">You smile!</h4>
+					</div>
+					<div class="modal-body">
+						<div>
+							<div ng-if="hasUserMedia" class="ng-scope">
+								<a class="btn btn-info" ng-click="enabled=!enabled">Demo</a>
+								<div class="camera ng-scope ng-isolate-scope" ng-if="enabled"
+									onsnapshot="snapshotTaken()">
+									<video class="camera" autoplay="" src="http://0.0.0.0:9000/">
+    								</video><canvas style="display: block" width="320" height="200"></canvas>
+									<camera-control-snapshot class="ng-scope">
+									<a class="btn btn-info" ng-click="takeSnapshot()">Take snapshot</a> 
+									</camera-control-snapshot>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputLable">Enter name</label> <input type="text"
+							class="form-control" id="inputLable" placeholder="Enter name"
+							ng-model="face.label" required>
+					</div>
 
-                        <div class="form-group">
-                            <label>Label</label>
-                            <input type="text" class="form-control"
-                                   ng-model="face.label">
-                        </div>
-                        <div class="form-group">
-                            <label>Path</label>
-                            <input type="text" class="form-control"
-                                   ng-model="face.path">
-                        </div> -->
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="clear()">
-                            <span class="glyphicon glyphicon-ban-circle"></span> Cancel
-                        </button>
-                        <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">
-                            <span class="glyphicon glyphicon-save"></span> Save
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+					<!-- <div class="span6">
+            			<canvas id="snapshot" class="well pull-right"></canvas>
+            			<button ng-click="downloadSnapshot(snapshotData)" ng-disabled="!snapshotData" class="btn btn-large btn-primary" disabled="disabled">Download ^^</button>
+            			<button class="btn btn-small" ng-click="showBase64 = !showBase64">Show as base64 encoded URL</button>
+            			<textarea class="snapshot-data ng-pristine ng-valid" ng-model="snapshotData" ng-show="showBase64" style="display: none;"></textarea>
+        				</div> -->
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal"
+					ng-click="clear()">
+					<span class="glyphicon glyphicon-ban-circle"></span> Cancel
+				</button>
+				<button type="submit" ng-disabled="form.$invalid"
+					class="btn btn-primary">
+					<span class="glyphicon glyphicon-save"></span> Save
+				</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
 
-    <div class="table-responsive">
+<div class="table-responsive">
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -74,7 +76,7 @@
                 <tr ng-repeat="face in faces">
                     <td>{{face.id}}</td>
                     <td>{{face.label}}</td>
-                    <!-- <td>{{face.path}}</td>-->
+                    <!--<td>{{face.path}}</td>-->
                     <td>
                         <button type="submit"
                                 ng-click="update(face.id)"
@@ -90,5 +92,5 @@
                 </tr>
             </tbody>
         </table>
-    </div>
+    </div> 
 </div>
