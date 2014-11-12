@@ -125,55 +125,47 @@ angular.module('ntipafacerecognizerApp')
             }
         };
     })
-    .directive('camera', function(CameraService) {
-    	return {
-    		restrict: 'EA',
-    		replace: true,
-    		transclude: true,
-    		scope: {},
-    		template: '<div class="camera"><video class="camera" autoplay="" /><div ng-transclude></div></div>',
-    		link: function(scope, ele, attrs) {
-    			var w = attrs.width || 320,
-    			h = attrs.height || 200;
+    .directive('animateOnChange', function($animate, $timeout) {
+    	return function(scope, elem, attr) {
+    	      scope.$watch(attr.animateOnChange, function(nv,ov) {
+    	        if (nv !==ov) {
+    	          var c = 'change';
+    	          $animate.addClass(elem,c, function() {
+    	              var call = function () {
+    	                $animate.removeClass(elem,c);
+    	              };
+    	              $timeout(call, 100);
+    	          });
+    	        }
+    	      });
+    	   };
 
-    			if (!CameraService.hasUserMedia) return;
-    			var userMedia = CameraService.getUserMedia(),
-    			videoElement = document.querySelector('video');
-    			// We'll be placing our interaction inside of here
-    		},
-    		controller: function(scope, $q, $timeout) {
-    			  this.takeSnapshot = function() {
-    			    var canvas  = document.querySelector('canvas'),
-    			        ctx     = canvas.getContext('2d'),
-    			        videoElement = document.querySelector('video'),
-    			        d       = $q.defer();
-
-    			    canvas.width = scope.w;
-    			    canvas.height = scope.h;
-
-    			    $timeout(function() {
-    			      ctx.fillRect(0, 0, scope.w, scope.h);
-    			      ctx.drawImage(videoElement, 0, 0, scope.w, scope.h);
-    			      d.resolve(canvas.toDataURL());
-    			    }, 0);
-    			    return d.promise;
-    			  }
-    			}
-    	}
     })
-    .directive('cameraControlSnapshot', function() {
-    	return {
-    		restrict: 'EA',
-    		require: '^camera',
-    		scope: true,
-    		template: '<a class="btn btn-info" ng-click="takeSnapshot()">Take snapshot</a>',
-    		link: function(scope, ele, attrs, cameraCtrl) {
-    			scope.takeSnapshot = function() {
-    				cameraCtrl.takeSnapshot()
-    				.then(function(image) {
-    					// data image here
-    				});
-    			}
-    		}
-    	}
+     .directive('imagePreview', function() {
+    	 return function(scope, elem, attr) {
+    	      var canvas = elem[0];
+    	      var ctx = canvas.getContext('2d');
+    	      var image = scope['image'];
+    	      
+    	      var imageObj = new Image();
+
+    	      canvas.width = $(canvas).parent().width();
+
+    	      imageObj.onload = function() {
+    	        canvas.height = canvas.width * 3 / 4;
+    	        ctx.drawImage(imageObj, 0, 0, canvas.width, canvas.height);
+    	      };
+    	      imageObj.src = image;
+    	   };
+    })
+    .directive('responsive', function() {
+    	 return function (scope, elem, attr) {
+    	        var $canvas = $(elem[0]);
+
+    	        $(window).resize(function () {
+    	            $canvas.width($canvas.parent().width());
+    	        });
+
+    	        $canvas.width($canvas.parent().width());
+    	    };
     });

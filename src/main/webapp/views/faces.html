@@ -3,9 +3,10 @@
 	<h2>Registrazione</h2>
 
 	<button class="btn btn-primary btn-lg" data-toggle="modal"
-		data-target="#saveFaceModal" ng-click="clear()">
+		data-target="#saveFaceModal" ng-click="openFace()">
 		<span class="glyphicon glyphicon-flash"></span> Create a new Face
 	</button>
+	
 	<div class="modal fade" id="saveFaceModal" tabindex="-1" role="dialog"
 		aria-labelledby="myFaceLabel" aria-hidden="true">
 		<div class="modal-dialog">
@@ -19,43 +20,46 @@
 							aria-hidden="true" ng-click="clear()">&times;</button>
 						<h4 class="modal-title" id="myFaceLabel">You smile!</h4>
 					</div>
-					<div class="modal-body">
-						<div>
-							<div ng-if="hasUserMedia" class="ng-scope">
-								<a class="btn btn-info" ng-click="enabled=!enabled">Demo</a>
-								<div class="camera ng-scope ng-isolate-scope" ng-if="enabled"
-									onsnapshot="snapshotTaken()">
-									<video class="camera" autoplay="" src="http://0.0.0.0:9000/">
-    								</video><canvas style="display: block" width="320" height="200"></canvas>
-									<camera-control-snapshot class="ng-scope">
-									<a class="btn btn-info" ng-click="takeSnapshot()">Take snapshot</a> 
-									</camera-control-snapshot>
+
+
+					<div class="my-show-hide-animation" id="booth-view">
+						<button ng-click="makeSnap()" id="start-photo" ng-hide="busy"
+							type="button" ng-show="newInsert"
+							class="btn btn-primary btn-lg btn-block glyphicon glyphicon-camera"> GO!
+						</button>
+						<button ng-click="remakeSnap()" id="start-photo" ng-hide="busy"
+							type="button" ng-show="!newInsert"
+							class="btn btn-primary btn-lg btn-block glyphicon glyphicon-camera"> Repeat!
+						</button>
+						<div class="row">
+							<div class="col-md-8 col-md-offset-2">
+
+								<div id="video-container" ng-show="!fotoFatta">
+									<video responsive id="video" autoplay></video>
+									<canvas id="canvas-overlay"></canvas>
 								</div>
+								<img ng-src="{{face.photo}}" ng-show="fotoFatta">
 							</div>
 						</div>
 					</div>
+					<canvas id="hidden-canvas" style="display: none;"></canvas>
+
+
 					<div class="form-group">
 						<label for="inputLable">Enter name</label> <input type="text"
 							class="form-control" id="inputLable" placeholder="Enter name"
-							ng-model="face.label" required>
+							ng-model="face.label" ng-disabled="newInsert" required>
 					</div>
-
-					<!-- <div class="span6">
-            			<canvas id="snapshot" class="well pull-right"></canvas>
-            			<button ng-click="downloadSnapshot(snapshotData)" ng-disabled="!snapshotData" class="btn btn-large btn-primary" disabled="disabled">Download ^^</button>
-            			<button class="btn btn-small" ng-click="showBase64 = !showBase64">Show as base64 encoded URL</button>
-            			<textarea class="snapshot-data ng-pristine ng-valid" ng-model="snapshotData" ng-show="showBase64" style="display: none;"></textarea>
-        				</div> -->
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal"
-					ng-click="clear()">
-					<span class="glyphicon glyphicon-ban-circle"></span> Cancel
-				</button>
-				<button type="submit" ng-disabled="form.$invalid"
-					class="btn btn-primary">
-					<span class="glyphicon glyphicon-save"></span> Save
-				</button>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal"
+							ng-click="clear()">
+							<span class="glyphicon glyphicon-ban-circle"></span> Cancel
+						</button>
+						<button type="submit" ng-disabled="form.$invalid"
+							class="btn btn-primary">
+							<span class="glyphicon glyphicon-save"></span> Save
+						</button>
+					</div>
 			</div>
 			</form>
 		</div>
@@ -68,7 +72,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Label</th>
-                    <!--<th>Path</th>-->
+                    <th>Path</th>
                     <th></th>
                 </tr>
             </thead>
@@ -76,7 +80,7 @@
                 <tr ng-repeat="face in faces">
                     <td>{{face.id}}</td>
                     <td>{{face.label}}</td>
-                    <!--<td>{{face.path}}</td>-->
+                    <td>{{face.path}}</td>
                     <td>
                         <button type="submit"
                                 ng-click="update(face.id)"
@@ -93,4 +97,4 @@
             </tbody>
         </table>
     </div> 
-</div>
+</div> 
