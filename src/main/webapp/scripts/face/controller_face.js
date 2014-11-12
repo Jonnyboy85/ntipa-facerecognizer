@@ -20,6 +20,7 @@ ntipafacerecognizerApp.controller('FaceController', function ($scope, resolvedFa
 	};
 
 	$scope.remakeSnap = function(){
+		$scope.fotoFatta= false;
 		$scope.newInsert=true;
 		$scope.face.photo =null;
 		$scope.initCam();
