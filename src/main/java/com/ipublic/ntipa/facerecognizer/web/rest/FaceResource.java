@@ -61,7 +61,7 @@ public class FaceResource {
 	        BufferedImage bufferedImage =  ImageIO.read( in ); 
 	        ImageIO.write ( bufferedImage , "png", new  File("fotocache/"+face.getId()+".png"));
 	        
-        }catch ( Exception ex ){ 
+        }catch ( Exception ex ){  
             ex.printStackTrace(); 
         }
     }
