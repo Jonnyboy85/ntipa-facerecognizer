@@ -75,12 +75,14 @@
                     <th>Path</th>
                     <th></th>
                 </tr>
-            </thead>
+            </thead> 
             <tbody>
                 <tr ng-repeat="face in faces">
                     <td>{{face.id}}</td>
                     <td>{{face.label}}</td>
-                    <td>{{face.path}}</td>
+                    <td> 
+                  	  <img src="/app/rest/faces/{{face.id}}/photo.png" >
+                    </td>
                     <td>
                         <button type="submit"
                                 ng-click="update(face.id)"

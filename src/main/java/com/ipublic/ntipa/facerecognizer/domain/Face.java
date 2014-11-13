@@ -25,6 +25,10 @@ public class Face implements Serializable {
     @Field("photo")
     private String photo;
     
+    @Field("count")
+    private Integer count;
+   
+    
     
     public String getId() {
         return id;
@@ -59,7 +63,17 @@ public class Face implements Serializable {
         this.path = path;
     }
 
-    @Override
+	
+	
+    public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	@Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -80,12 +94,11 @@ public class Face implements Serializable {
         return id != null ? id.hashCode() : 0;
     }
 
-    @Override
-    public String toString() {
-        return "Face{" +
-                "id=" + id +
-                ", label='" + label + "'" +
-                ", path='" + path + "'" +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Face [id=" + id + ", label=" + label + ", path=" + path
+				+ ", count=" + count + "]";
+	}
+
+  
 }
