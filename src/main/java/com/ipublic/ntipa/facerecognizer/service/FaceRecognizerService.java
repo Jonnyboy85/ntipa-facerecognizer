@@ -10,9 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.IntBuffer;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -25,7 +23,6 @@ import org.bytedeco.javacpp.opencv_core.Mat;
 import org.bytedeco.javacpp.opencv_core.MatVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Service;
 
@@ -141,7 +138,7 @@ public class FaceRecognizerService {
 					File image = convertFaceToFile(face);
 					String filename = image.getAbsolutePath();
 					Mat box_face = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
-					Integer label = face.getCount();
+					Integer label = face.getCount()-1;
 					images.put(label, box_face);
 					labelsBuf.put(label, label);
 				}

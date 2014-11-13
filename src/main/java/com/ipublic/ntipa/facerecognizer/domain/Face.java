@@ -1,6 +1,9 @@
 package com.ipublic.ntipa.facerecognizer.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -11,6 +14,9 @@ import java.io.Serializable;
  */
 
 @Document(collection = "T_FACE")
+@CompoundIndexes(value = {
+		@CompoundIndex(name = "count_unique", def = "{'count':1 }", unique=true) 
+})
 public class Face implements Serializable {
 
     @Id
@@ -26,9 +32,9 @@ public class Face implements Serializable {
     private String photo;
     
     @Field("count")
+    @Indexed(unique=true)
     private Integer count;
    
-    
     
     public String getId() {
         return id;

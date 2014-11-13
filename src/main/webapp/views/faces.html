@@ -76,19 +76,19 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Label</th>
-                    <th>Path</th>
+                    <th>Foto</th>
+                    <th>Counter</th>
                     <th></th>
                 </tr>
             </thead> 
             <tbody>
                 <tr ng-repeat="face in faces">
-                    <td>{{face.id}}</td>
                     <td>{{face.label}}</td>
                     <td> 
                   	  <img src="/app/rest/faces/{{face.id}}/photo.png" >
                     </td>
+                    <td>{{face.count}}</td>
                     <td>
                         <button type="submit"
                                 ng-click="update(face.id)"

@@ -1,5 +1,7 @@
 package com.ipublic.ntipa.facerecognizer.service;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -20,20 +22,28 @@ public class FaceService {
 	private FaceRepository faceRepository;
 
 
-//	@Inject
-//	private FaceRecognizerService faceRecognizerService;
+	@Inject
+	private FaceRecognizerService faceRecognizerService;
 
+	
+	@Transactional(readOnly=true)
+	public Face verifica(Face faceDaVerificare) throws IOException {
+		Integer count = faceRecognizerService.predict(faceDaVerificare);
+		if(count == null )
+			throw new RuntimeException("Faccia non trovata");
+		return faceRepository.findByCount(count);
+	}
+	
 	@Transactional
 	public Face save(Face face) {
 		log.debug("face:" + face);
 		faceRepository.save(face);
 		if (face != null && face.getCount() == null) {
-			Long count = faceRepository.count() + 1L;
+			Long count = faceRepository.count();
 			face.setCount(count.intValue());
 		}
 
 		faceRepository.save(face);
-
 		log.debug("face:" + face);
 
 		//faceRecognizerService.train(face);
