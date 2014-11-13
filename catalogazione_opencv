@@ -1,0 +1,24 @@
+%YAML:1.0
+num_components: 0
+mean: !!opencv-matrix
+   rows: 0
+   cols: 0
+   dt: u
+   data: []
+eigenvalues: !!opencv-matrix
+   rows: 0
+   cols: 0
+   dt: u
+   data: []
+eigenvectors: !!opencv-matrix
+   rows: 0
+   cols: 0
+   dt: u
+   data: []
+projections:
+   []
+labels: !!opencv-matrix
+   rows: 0
+   cols: 0
+   dt: u
+   data: []

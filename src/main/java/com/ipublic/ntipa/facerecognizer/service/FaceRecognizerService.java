@@ -10,10 +10,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.IntBuffer;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.imageio.ImageIO;
+import javax.inject.Inject;
 
 import org.bytedeco.javacpp.opencv_contrib;
 import org.bytedeco.javacpp.opencv_contrib.FaceRecognizer;
@@ -26,6 +30,7 @@ import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Service;
 
 import com.ipublic.ntipa.facerecognizer.domain.Face;
+import com.ipublic.ntipa.facerecognizer.repository.FaceRepository;
 
 /**
  * Service class for managing users.
@@ -41,6 +46,9 @@ public class FaceRecognizerService {
 	private FaceRecognizer faceRecognizer = opencv_contrib
 			.createFisherFaceRecognizer();
 
+	@Inject
+	private FaceRepository faceRepository;
+
 	private static final String CATALOGAZIONE_OPENCV = "catalogazione_opencv";
 
 	public FaceRecognizerService() {
@@ -55,9 +63,8 @@ public class FaceRecognizerService {
 			faceRecognizer.load(file.getAbsolutePath());
 		}
 
-		
 		File cacheDir = new File(FOTOCACHE);
-		if(!cacheDir.exists()){
+		if (!cacheDir.exists()) {
 			cacheDir.mkdir();
 		}
 	}
@@ -79,8 +86,8 @@ public class FaceRecognizerService {
 		InputStream in = new ByteArrayInputStream(imgByteArray);
 		BufferedImage bufferedImage = ImageIO.read(in);
 
-		File file = new File(FOTOCACHE+ "/"+ face.getId() + ".png");
-		ImageIO.write(bufferedImage, "png",  file );
+		File file = new File(FOTOCACHE + "/" + face.getId() + ".png");
+		ImageIO.write(bufferedImage, "png", file);
 
 		return file;
 
@@ -104,11 +111,43 @@ public class FaceRecognizerService {
 			String filename = image.getAbsolutePath();
 			Mat box_face = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
 			Integer label = face.getCount();
-			log.debug("label:"+label);
+			log.debug("label:" + label);
 			images.put(0, box_face);
-			labelsBuf.put(label, label);
-			
+			labelsBuf.put(0, label);
 			faceRecognizer.train(images, labels);
+		} catch (IOException e) {
+			log.error("train", e);
+		}
+
+	}
+
+	/**
+	 * Inserimento face nella sistema di classificazione
+	 * 
+	 * @param face
+	 * @throws IOException
+	 */
+	public void trainAll() {
+		try {
+
+			List<Face> faces = faceRepository.findAll();
+			
+				Mat labels = new Mat(faces.size(), 1, CV_32SC1);
+				IntBuffer labelsBuf = labels.getIntBuffer();
+
+				MatVector images = new MatVector(faces.size() );
+
+				for (Face face : faces) {
+					File image = convertFaceToFile(face);
+					String filename = image.getAbsolutePath();
+					Mat box_face = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
+					Integer label = face.getCount();
+					images.put(label, box_face);
+					labelsBuf.put(label, label);
+				}
+				faceRecognizer.train(images, labels);
+			 
+
 		} catch (IOException e) {
 			log.error("train", e);
 		}

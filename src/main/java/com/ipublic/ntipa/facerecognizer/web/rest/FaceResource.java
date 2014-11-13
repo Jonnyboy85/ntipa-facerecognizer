@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.codahale.metrics.annotation.Timed;
 import com.ipublic.ntipa.facerecognizer.domain.Face;
 import com.ipublic.ntipa.facerecognizer.repository.FaceRepository;
+import com.ipublic.ntipa.facerecognizer.service.FaceRecognizerService;
 import com.ipublic.ntipa.facerecognizer.service.FaceService;
 
 /**
@@ -37,6 +38,8 @@ public class FaceResource {
 	@Inject
     private FaceService faceService;
 	
+	@Inject
+    private FaceRecognizerService faceRecognizerService;
 	
     /**
      * POST  /rest/faces -> Create a new face.
@@ -50,7 +53,19 @@ public class FaceResource {
         faceService.save(face);
     }
 
+   
 
+	/**
+	 * PUT /rest/faces -> get the trainAll.
+	 */
+	@RequestMapping(value = "/rest/faces", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Timed
+	public void trainAll( ) {
+		log.debug("REST request trainAll ");
+	 
+		faceRecognizerService.trainAll();
+	}
+	
 	/**
 	 * GET /rest/faces/:id -> get the "id" face.
 	 */

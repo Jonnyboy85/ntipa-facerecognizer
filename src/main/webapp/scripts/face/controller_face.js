@@ -9,6 +9,13 @@ ntipafacerecognizerApp.controller('FaceController', function ($scope, resolvedFa
 	$scope.newInsert = false;
 	$scope.fotoFatta= false;
 	
+	
+	$scope.train = function(){
+		Face.train( {},
+				function () {
+			Alert("Train completato");
+		});
+	};
 	$scope.makeSnap = function(){
 		$log.debug('CONTROLLO SE HO MIA FOTO');
 		$log.debug($scope.face.photo);
