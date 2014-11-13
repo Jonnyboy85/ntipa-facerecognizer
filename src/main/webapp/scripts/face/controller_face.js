@@ -23,6 +23,7 @@ ntipafacerecognizerApp.controller('FaceController', function ($scope, resolvedFa
 		$scope.fotoFatta= false;
 		$scope.newInsert=true;
 		$scope.face.photo =null;
+		$scope.face.label =null;
 		$scope.initCam();
 		$log.debug('RESETTO MIA FOTO');
 		$log.debug($scope.face.photo);
@@ -58,8 +59,9 @@ ntipafacerecognizerApp.controller('FaceController', function ($scope, resolvedFa
 	};
 
 	$scope.update = function (id) {
-		$scope.face = Face.get({id: id});
+		$scope.newInsert=false;
 		$scope.fotoFatta= true;
+		$scope.face = Face.get({id: id});
 		$('#saveFaceModal').modal('show');
  
 	};
