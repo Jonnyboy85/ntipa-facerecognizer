@@ -10,7 +10,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.IntBuffer;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -21,6 +23,11 @@ import org.bytedeco.javacpp.opencv_contrib;
 import org.bytedeco.javacpp.opencv_contrib.FaceRecognizer;
 import org.bytedeco.javacpp.opencv_core.Mat;
 import org.bytedeco.javacpp.opencv_core.MatVector;
+import org.bytedeco.javacpp.opencv_core.Rect;
+import org.bytedeco.javacpp.opencv_core.Size;
+import org.bytedeco.javacpp.opencv_highgui;
+import org.bytedeco.javacpp.opencv_imgproc;
+import org.bytedeco.javacpp.opencv_objdetect.CascadeClassifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.codec.Base64;
@@ -42,7 +49,8 @@ public class FaceRecognizerService {
 
 	private FaceRecognizer faceRecognizer = opencv_contrib
 			.createFisherFaceRecognizer();
-
+	private Map<Integer,String> mappaFace = new HashMap<Integer,String>();
+	
 	@Inject
 	private FaceRepository faceRepository;
 
@@ -57,7 +65,7 @@ public class FaceRecognizerService {
 		log.debug("startup...");
 		File file = new File(CATALOGAZIONE_OPENCV);
 		if (file.exists()) {
-			faceRecognizer.load(file.getAbsolutePath());
+			//faceRecognizer.load(file.getAbsolutePath());
 		}
 
 		File cacheDir = new File(FOTOCACHE);
@@ -70,7 +78,7 @@ public class FaceRecognizerService {
 	public void shutdown() {
 		log.debug("shutdown...");
 		File file = new File(CATALOGAZIONE_OPENCV);
-		faceRecognizer.save(file.getAbsolutePath());
+	//	faceRecognizer.save(file.getAbsolutePath());
 
 	}
 
@@ -90,57 +98,61 @@ public class FaceRecognizerService {
 
 	}
 
+//	/**
+//	 * Inserimento face nella sistema di classificazione
+//	 * 
+//	 * @param face
+//	 * @throws IOException
+//	 */
+//	public void train(Face face) {
+//		try {
+//			File image;
+//
+//			image = convertFaceToFile(face);
+//
+//			Mat labels = new Mat(1, 1, CV_32SC1);
+//			IntBuffer labelsBuf = labels.getIntBuffer();
+//			MatVector images = new MatVector(1);
+//			String filename = image.getAbsolutePath();
+//			Mat box_face = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
+//			log.debug("label:" + label);
+//			images.put(0, box_face);
+//			labelsBuf.put(0, label);
+//			faceRecognizer.train(images, labels);
+//		} catch (IOException e) {
+//			log.error("train", e);
+//		}
+//	}
+//	
 	/**
 	 * Inserimento face nella sistema di classificazione
 	 * 
-	 * @param face
-	 * @throws IOException
-	 */
-	public void train(Face face) {
-		try {
-			File image;
-
-			image = convertFaceToFile(face);
-
-			Mat labels = new Mat(1, 1, CV_32SC1);
-			IntBuffer labelsBuf = labels.getIntBuffer();
-			MatVector images = new MatVector(1);
-			String filename = image.getAbsolutePath();
-			Mat box_face = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
-			Integer label = face.getCount();
-			log.debug("label:" + label);
-			images.put(0, box_face);
-			labelsBuf.put(0, label);
-			faceRecognizer.train(images, labels);
-		} catch (IOException e) {
-			log.error("train", e);
-		}
-
-	}
-
-	/**
-	 * Inserimento face nella sistema di classificazione
-	 * 
-	 * @param face
 	 * @throws IOException
 	 */
 	public void trainAll() {
 		try {
 
+			mappaFace = new HashMap<Integer, String>();
 			List<Face> faces = faceRepository.findAll();
 			
 				Mat labels = new Mat(faces.size(), 1, CV_32SC1);
 				IntBuffer labelsBuf = labels.getIntBuffer();
 
 				MatVector images = new MatVector(faces.size() );
-
+				int count =0;
+				
 				for (Face face : faces) {
 					File image = convertFaceToFile(face);
-					String filename = image.getAbsolutePath();
+					File fileDetect = resizeImage(image,face);
+					
+					String filename = fileDetect.getAbsolutePath();
 					Mat box_face = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
-					Integer label = face.getCount()-1;
+					mappaFace.put(count, face.getId());
+					Integer label = count;
 					images.put(label, box_face);
 					labelsBuf.put(label, label);
+					count++;
+
 				}
 				faceRecognizer.train(images, labels);
 			 
@@ -150,23 +162,42 @@ public class FaceRecognizerService {
 		}
 
 	}
+	
+	public File resizeImage(File img, Face face) {
+
+			CascadeClassifier faceDetector = new CascadeClassifier(
+					Thread.class.getResource( "/haarcascade_frontalface_alt.xml" ).getPath()	 );
+			
+			Mat image = opencv_highgui.imread(img.getAbsolutePath());
+			Rect boxes = new Rect();
+			faceDetector.detectMultiScale(image, boxes );
+			File fileDetect = new File(FOTOCACHE + "/" + face.getId() + "_detect.png");
+			Mat croppedface = new Mat(image, boxes);
+			opencv_highgui.imwrite(fileDetect.getAbsolutePath(), croppedface);
+
+			Size size = new Size(100,100);
+			opencv_imgproc.resize( image ,croppedface,size);
+			return fileDetect;
+
+	}
 
 	/**
-	 * Cerca faccia nel sistema di catalogazione
+	 * Cerca faccia nel sistema di catalogazione torna id face
 	 * 
 	 * @param faceDaVerificare
 	 * @return
 	 * @throws IOException
 	 */
-	public Integer predict(Face faceDaVerificare) throws IOException {
+	public String predict(Face faceDaVerificare) throws IOException {
 		File fileImageTest = convertFaceToFile(faceDaVerificare);
 		Mat testImage = imread(fileImageTest.getAbsolutePath(),
 				CV_LOAD_IMAGE_GRAYSCALE);
-		int predictedLabel = faceRecognizer.predict(testImage);
+		Integer predictedLabel = faceRecognizer.predict(testImage);
 		System.out.println("Predicted label: " + predictedLabel);
 		log.debug("Predicted label trovata: " + predictedLabel);
 
-		return predictedLabel;
+		return mappaFace.get(predictedLabel);
+		
 	}
 
 }

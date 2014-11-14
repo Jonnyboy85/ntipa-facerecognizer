@@ -1,5 +1,6 @@
 package com.ipublic.ntipa.facerecognizer.web.rest;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -55,6 +56,29 @@ public class FaceResource {
 
    
 
+   
+    
+    /**
+     * POST  /rest/faces -> Create a new face.
+     */
+    @RequestMapping(value = "/rest/faces/verify",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Timed
+    public Face verify(@RequestBody Face face) {
+        try {
+        	log.debug("REST verify  Face : {}", face);
+        	Face faceccc= faceService.verifica( face );
+        	log.debug( ""+faceccc );
+        	return faceccc;
+		} catch (IOException e) {
+			log.error("verify",e);
+			throw new RuntimeException("Face non trovata");
+		} 
+        
+    }
+
+    
 	/**
 	 * PUT /rest/faces -> get the trainAll.
 	 */

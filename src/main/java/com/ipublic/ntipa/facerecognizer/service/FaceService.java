@@ -24,25 +24,18 @@ public class FaceService {
 
 	@Inject
 	private FaceRecognizerService faceRecognizerService;
-
 	
 	@Transactional(readOnly=true)
 	public Face verifica(Face faceDaVerificare) throws IOException {
-		Integer count = faceRecognizerService.predict(faceDaVerificare);
-		if(count == null )
+		String id  = faceRecognizerService.predict(faceDaVerificare);
+		if(id == null )
 			throw new RuntimeException("Faccia non trovata");
-		return faceRepository.findByCount(count);
+		return faceRepository.findOne(id);
 	}
 	
 	@Transactional
 	public Face save(Face face) {
 		log.debug("face:" + face);
-		faceRepository.save(face);
-		if (face != null && face.getCount() == null) {
-			Long count = faceRepository.count();
-			face.setCount(count.intValue());
-		}
-
 		faceRepository.save(face);
 		log.debug("face:" + face);
 

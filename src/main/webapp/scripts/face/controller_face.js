@@ -8,22 +8,40 @@ ntipafacerecognizerApp.controller('FaceController', function ($scope, resolvedFa
 	
 	$scope.newInsert = false;
 	$scope.fotoFatta= false;
+	$scope.login= false;
+	$scope.isTrovata= false;
 	
 	
 	$scope.train = function(){
 		Face.train( {},
 				function () {
-			Alert("Train completato");
 		});
 	};
+	
+	$scope.verify = function(){
+		$log.debug('SSONO IN VERIFY');
+		
+		Face.verify( $scope.face,
+				function (result) {
+				$scope.faceTrovata = result;
+//				if(faceTrovata)
+				$scope.isTrovata = true;
+		});
+	};
+	
 	$scope.makeSnap = function(){
-		$log.debug('CONTROLLO SE HO MIA FOTO');
 		$log.debug($scope.face.photo);
 		$scope.face.photo = CameraService.photo();
 		$scope.fotoFatta= true;
 		$scope.newInsert=false;
 		$log.debug('STAMPA MIA FOTO');
 		$log.debug($scope.face.photo);
+		
+		if($scope.login){
+			$log.debug('STO ENTRANDO VERIFY');
+			$scope.verify();
+		}
+		
 	};
 
 	$scope.remakeSnap = function(){
@@ -40,11 +58,21 @@ ntipafacerecognizerApp.controller('FaceController', function ($scope, resolvedFa
 		$log.debug("init");
 		$scope.newInsert=true;
 		$scope.fotoFatta= false;
+		$scope.login= false;
+		$scope.isTrovata = false;
 		$scope.initCam();
 	
 		$scope.face = {label: null, path: null, id: null, photo: null};
 	};
 
+	$scope.openFaceLogin = function() {
+		$scope.newInsert=true;
+		$scope.fotoFatta= false;
+		$scope.login= true;
+		$scope.initCam();
+	
+		$scope.face = {label: null, path: null, id: null, photo: null};
+	};
 
 	$scope.initCam = function() {
 		CameraService.activateWebcam(

@@ -9,5 +9,4 @@ import com.ipublic.ntipa.facerecognizer.domain.Face;
  */
 public interface FaceRepository extends MongoRepository<Face, String> {
 
-	Face findByCount(Integer count);
 }

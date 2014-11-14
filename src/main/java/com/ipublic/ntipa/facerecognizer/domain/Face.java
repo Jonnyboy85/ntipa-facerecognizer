@@ -14,9 +14,6 @@ import java.io.Serializable;
  */
 
 @Document(collection = "T_FACE")
-@CompoundIndexes(value = {
-		@CompoundIndex(name = "count_unique", def = "{'count':1 }", unique=true) 
-})
 public class Face implements Serializable {
 
     @Id
@@ -30,10 +27,7 @@ public class Face implements Serializable {
     
     @Field("photo")
     private String photo;
-    
-    @Field("count")
-    @Indexed(unique=true)
-    private Integer count;
+ 
    
     
     public String getId() {
@@ -70,15 +64,7 @@ public class Face implements Serializable {
     }
 
 	
-	
-    public Integer getCount() {
-		return count;
-	}
-
-	public void setCount(Integer count) {
-		this.count = count;
-	}
-
+ 
 	@Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -103,7 +89,7 @@ public class Face implements Serializable {
 	@Override
 	public String toString() {
 		return "Face [id=" + id + ", label=" + label + ", path=" + path
-				+ ", count=" + count + "]";
+				 + "]";
 	}
 
   

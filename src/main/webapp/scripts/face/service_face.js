@@ -1,10 +1,11 @@
 'use strict';
 
 ntipafacerecognizerApp.factory('Face', function ($resource) {
-	return $resource('app/rest/faces/:id', {}, {
+	return $resource('app/rest/faces/:id/:action', {}, {
 		'query': { method: 'GET', isArray: true},
 		'get': { method: 'GET'},
-		'train': { method: 'PUT'}
+		'train': { method: 'PUT'},
+		'verify': { method: 'POST',isArray: false,  params: { 'action':'verify'}}	
 	});
 });
 
@@ -18,15 +19,15 @@ ntipafacerecognizerApp.service('CameraService', function($timeout, $log) {
 	this.photo = function () {
 		$log.debug("$video");
 		$log.debug($video);
-
+		
 		hiddenCanvas.width = $video.width();
 		hiddenCanvas.height = $video.height();
 
 		var ctx = hiddenCanvas.getContext('2d');
-		ctx.translate(hiddenCanvas.width, 0);
-		ctx.scale(-1, 1);
-		ctx.drawImage(video, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+	//	ctx.translate(hiddenCanvas.width, 0);
+	//	ctx.drawImage(video, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
 
+		ctx.drawImage(video, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
 		return hiddenCanvas.toDataURL('image/png');
 	};
 
@@ -66,9 +67,6 @@ ntipafacerecognizerApp.service('CameraService', function($timeout, $log) {
 					errorCallback
 			);
 		}
-
-
-
 	};
 
 	var init = function () {
@@ -77,6 +75,10 @@ ntipafacerecognizerApp.service('CameraService', function($timeout, $log) {
 		video.width = $video.parent().width();
 		hiddenCanvas = document.getElementById('hidden-canvas');
 		overlayCanvas = document.getElementById('canvas-overlay');
+		
+		video.style.cssText = "-moz-transform: scale(-1, 1); \
+			-webkit-transform: scale(-1, 1); -o-transform: scale(-1, 1); \
+			transform: scale(-1, 1); filter: FlipH;";
 	};
 
 });
@@ -88,8 +90,8 @@ function Photo(opts, $timeout) {
 	var defaults = {
 			'images': 1,
 			'canvas': 'canvas',
-			'width': 600,
-			'height': 600
+			'width': 1024,
+			'height': 768
 	};
 
 	var margins = {
