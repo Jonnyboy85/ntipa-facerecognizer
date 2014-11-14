@@ -37,9 +37,10 @@
 								class="btn btn-primary btn-lg btn-block glyphicon glyphicon-camera">
 								GO!</button>
 							<button ng-click="remakeSnap()" id="start-photo" type="button"
-								ng-show="!newInsert"
+								ng-show="!newInsert" 
 								class="btn btn-primary btn-lg btn-block glyphicon glyphicon-camera">
 								Repeat!</button>
+								
 							<div class="row">
 								<div class="col-md-8 col-md-offset-2">
 
@@ -53,8 +54,11 @@
 						</div>
 						<canvas id="hidden-canvas" style="display: none;"></canvas>
 
-						<div class="well" ng-show="isTrovata">
+						<div class="well" ng-show="isTrovata" >
 							{{faceTrovata}} <img src="{{faceTrovata.photo}}">
+						</div>
+						<div  ng-show="!isTrovata && fotoFatta && login">
+							Image not found! Please, repeat.
 						</div>
 
 						<div class="form-group" ng-hide="login">

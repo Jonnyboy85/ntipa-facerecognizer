@@ -34,6 +34,7 @@ ntipafacerecognizerApp.controller('FaceController', function ($scope, resolvedFa
 		$scope.face.photo = CameraService.photo();
 		$scope.fotoFatta= true;
 		$scope.newInsert=false;
+		$scope.isTrovata= false;
 		$log.debug('STAMPA MIA FOTO');
 		$log.debug($scope.face.photo);
 		

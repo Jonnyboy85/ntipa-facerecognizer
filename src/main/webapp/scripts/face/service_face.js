@@ -24,8 +24,8 @@ ntipafacerecognizerApp.service('CameraService', function($timeout, $log) {
 		hiddenCanvas.height = $video.height();
 
 		var ctx = hiddenCanvas.getContext('2d');
-	//	ctx.translate(hiddenCanvas.width, 0);
-	//	ctx.drawImage(video, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+		ctx.translate(hiddenCanvas.width, 0);
+        ctx.scale(-1, 1);
 
 		ctx.drawImage(video, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
 		return hiddenCanvas.toDataURL('image/png');
@@ -75,10 +75,6 @@ ntipafacerecognizerApp.service('CameraService', function($timeout, $log) {
 		video.width = $video.parent().width();
 		hiddenCanvas = document.getElementById('hidden-canvas');
 		overlayCanvas = document.getElementById('canvas-overlay');
-		
-		video.style.cssText = "-moz-transform: scale(-1, 1); \
-			-webkit-transform: scale(-1, 1); -o-transform: scale(-1, 1); \
-			transform: scale(-1, 1); filter: FlipH;";
 	};
 
 });

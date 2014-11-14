@@ -90,11 +90,18 @@ public class FaceRecognizerService {
 
 		InputStream in = new ByteArrayInputStream(imgByteArray);
 		BufferedImage bufferedImage = ImageIO.read(in);
-
+		
+		
+		if(face.getId() == null){
+			File file = File.createTempFile("testimage", ".png");
+			ImageIO.write(bufferedImage, "png", file);
+			return file;	
+		}else{
 		File file = new File(FOTOCACHE + "/" + face.getId() + ".png");
 		ImageIO.write(bufferedImage, "png", file);
 
 		return file;
+		}
 
 	}
 
@@ -135,7 +142,7 @@ public class FaceRecognizerService {
 			mappaFace = new HashMap<Integer, String>();
 			List<Face> faces = faceRepository.findAll();
 			
-				Mat labels = new Mat(faces.size(), 1, CV_32SC1);
+				Mat labels = new Mat(faces.size(), 1, CV_32SC1); 
 				IntBuffer labelsBuf = labels.getIntBuffer();
 
 				MatVector images = new MatVector(faces.size() );
@@ -163,7 +170,7 @@ public class FaceRecognizerService {
 
 	}
 	
-	public File resizeImage(File img, Face face) {
+	public File resizeImage(File img, Face face) throws IOException {
 
 			CascadeClassifier faceDetector = new CascadeClassifier(
 					Thread.class.getResource( "/haarcascade_frontalface_alt.xml" ).getPath()	 );
@@ -171,12 +178,21 @@ public class FaceRecognizerService {
 			Mat image = opencv_highgui.imread(img.getAbsolutePath());
 			Rect boxes = new Rect();
 			faceDetector.detectMultiScale(image, boxes );
-			File fileDetect = new File(FOTOCACHE + "/" + face.getId() + "_detect.png");
+			log.debug(boxes.asCvRect().toString());
 			Mat croppedface = new Mat(image, boxes);
+			
+			
+			File fileDetect = null;
+			if(face.getId() == null){
+				fileDetect = File.createTempFile("testimage_detect", ".png");
+			}else{
+				fileDetect = new File(FOTOCACHE + "/" + face.getId() + "_detect.png");
+			}
+			
 			opencv_highgui.imwrite(fileDetect.getAbsolutePath(), croppedface);
-
-			Size size = new Size(100,100);
+			Size size = new Size(60,60);
 			opencv_imgproc.resize( image ,croppedface,size);
+			
 			return fileDetect;
 
 	}
@@ -190,8 +206,12 @@ public class FaceRecognizerService {
 	 */
 	public String predict(Face faceDaVerificare) throws IOException {
 		File fileImageTest = convertFaceToFile(faceDaVerificare);
-		Mat testImage = imread(fileImageTest.getAbsolutePath(),
+		File fileDetect = resizeImage(fileImageTest,faceDaVerificare);
+		
+		Mat testImage = imread(fileDetect.getAbsolutePath(),
 				CV_LOAD_IMAGE_GRAYSCALE);
+		
+		
 		Integer predictedLabel = faceRecognizer.predict(testImage);
 		System.out.println("Predicted label: " + predictedLabel);
 		log.debug("Predicted label trovata: " + predictedLabel);
