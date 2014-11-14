@@ -168,7 +168,7 @@ public class FaceRecognizerService {
 			log.error("train", e);
 		}
 
-	}
+	} 
 	
 	public File resizeImage(File img, Face face) throws IOException {
 
