@@ -61,7 +61,7 @@ ntipafacerecognizerApp.controller('FaceController', function ($scope, resolvedFa
 		$scope.fotoFatta= false;
 		$scope.login= false;
 		$scope.isTrovata = false;
-		$scope.initCam();
+		$scope.initCam(); 
 	
 		$scope.face = {label: null, path: null, id: null, photo: null};
 	};
@@ -113,13 +113,4 @@ ntipafacerecognizerApp.controller('FaceController', function ($scope, resolvedFa
 		$scope.face = {label: null, path: null, id: null};
 	};
 
-	/**
-	 * This function could be used to send the image data
-	 * to a backend server that expects base64 encoded images.
-	 *
-	 * In this example, we simply store it in the scope for display.
-	 */
-//	var sendSnapshotToServer = function sendSnapshotToServer(imgBase64) {
-//		$scope.face.photo = imgBase64;
-//	};
 });

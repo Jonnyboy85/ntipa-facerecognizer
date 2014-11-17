@@ -63,11 +63,14 @@ ntipafacerecognizerApp.service('CameraService', function($timeout, $log) {
 							video.src = vendorURL.createObjectURL(stream);
 						}
 						video.play();
+						video.style.cssText = "-moz-transform: scale(-1, 1); \
+							-webkit-transform: scale(-1, 1); -o-transform: scale(-1, 1); \
+							transform: scale(-1, 1); filter: FlipH;";
 					},
 					errorCallback
 			);
 		}
-	};
+	}; 
 
 	var init = function () {
 		video = document.getElementById('video');
