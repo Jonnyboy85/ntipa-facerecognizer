@@ -23,11 +23,6 @@ import org.bytedeco.javacpp.opencv_contrib;
 import org.bytedeco.javacpp.opencv_contrib.FaceRecognizer;
 import org.bytedeco.javacpp.opencv_core.Mat;
 import org.bytedeco.javacpp.opencv_core.MatVector;
-import org.bytedeco.javacpp.opencv_core.Rect;
-import org.bytedeco.javacpp.opencv_core.Size;
-import org.bytedeco.javacpp.opencv_highgui;
-import org.bytedeco.javacpp.opencv_imgproc;
-import org.bytedeco.javacpp.opencv_objdetect.CascadeClassifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.codec.Base64;
@@ -53,6 +48,9 @@ public class FaceRecognizerService {
 	
 	@Inject
 	private FaceRepository faceRepository;
+	
+	@Inject
+	private FaceDetectService faceDetectService;
 
 	private static final String CATALOGAZIONE_OPENCV = "catalogazione_opencv";
 
@@ -150,7 +148,7 @@ public class FaceRecognizerService {
 				
 				for (Face face : faces) {
 					File image = convertFaceToFile(face);
-					File fileDetect = resizeImage(image,face);
+					File fileDetect = faceDetectService.resizeImage(image,face);
 					
 					String filename = fileDetect.getAbsolutePath();
 					Mat box_face = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
@@ -170,33 +168,6 @@ public class FaceRecognizerService {
 
 	} 
 	
-	public File resizeImage(File img, Face face) throws IOException {
-
-			CascadeClassifier faceDetector = new CascadeClassifier(
-					Thread.class.getResource( "/haarcascade_frontalface_alt.xml" ).getPath()	 );
-			
-			Mat image = opencv_highgui.imread(img.getAbsolutePath());
-			Rect boxes = new Rect();
-			faceDetector.detectMultiScale(image, boxes );
-			log.debug(boxes.asCvRect().toString());
-			Mat croppedface = new Mat(image, boxes);
-			
-			
-			File fileDetect = null;
-			if(face.getId() == null){
-				fileDetect = File.createTempFile("testimage_detect", ".png");
-			}else{
-				fileDetect = new File(FOTOCACHE + "/" + face.getId() + "_detect.png");
-			}
-			
-			opencv_highgui.imwrite(fileDetect.getAbsolutePath(), croppedface);
-			Size size = new Size(60,60);
-			opencv_imgproc.resize( image ,croppedface,size);
-			
-			return fileDetect;
-
-	}
-
 	/**
 	 * Cerca faccia nel sistema di catalogazione torna id face
 	 * 
@@ -206,7 +177,7 @@ public class FaceRecognizerService {
 	 */
 	public String predict(Face faceDaVerificare) throws IOException {
 		File fileImageTest = convertFaceToFile(faceDaVerificare);
-		File fileDetect = resizeImage(fileImageTest,faceDaVerificare);
+		File fileDetect = faceDetectService.resizeImage(fileImageTest,faceDaVerificare);
 		
 		Mat testImage = imread(fileDetect.getAbsolutePath(),
 				CV_LOAD_IMAGE_GRAYSCALE);

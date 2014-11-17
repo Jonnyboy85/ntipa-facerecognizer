@@ -61,7 +61,7 @@ ntipafacerecognizerApp.service('CameraService', function($timeout, $log) {
 						} else {
 							var vendorURL = window.URL || window.webkitURL;
 							video.src = vendorURL.createObjectURL(stream);
-						} 
+						}
 						video.play();
 						video.style.cssText = "-moz-transform: scale(-1, 1); \
 							-webkit-transform: scale(-1, 1); -o-transform: scale(-1, 1); \
