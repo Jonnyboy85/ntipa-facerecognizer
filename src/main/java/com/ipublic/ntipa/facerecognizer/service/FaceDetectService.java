@@ -31,7 +31,7 @@ public class FaceDetectService {
 		OpenCV.loadLibrary();
         //System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
      
-        CascadeClassifier faceDetector = new CascadeClassifier(Thread.class.getResource("haarcascade_frontalface_alt.xml").getPath());
+        CascadeClassifier faceDetector = new CascadeClassifier(Thread.class.getResource( "/haarcascade_frontalface_alt.xml" ).getPath()	 );
                
         Mat image = Highgui.imread(img.getAbsolutePath() );
 
