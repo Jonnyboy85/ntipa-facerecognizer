@@ -42,8 +42,7 @@ public class FaceRecognizerService {
 	private final Logger log = LoggerFactory
 			.getLogger(FaceRecognizerService.class);
 
-	private FaceRecognizer faceRecognizer = opencv_contrib
-			.createFisherFaceRecognizer();
+	private FaceRecognizer faceRecognizer ;
 	private Map<Integer,String> mappaFace = new HashMap<Integer,String>();
 	
 	@Inject
@@ -136,27 +135,31 @@ public class FaceRecognizerService {
 	 */
 	public void trainAll() {
 		try {
-
+			faceRecognizer = opencv_contrib
+					.createFisherFaceRecognizer();
 			mappaFace = new HashMap<Integer, String>();
 			List<Face> faces = faceRepository.findAll();
 			
-				Mat labels = new Mat(faces.size(), 1, CV_32SC1); 
+				Mat labels = new Mat(faces.size()+1, 1, CV_32SC1); 
 				IntBuffer labelsBuf = labels.getIntBuffer();
 
-				MatVector images = new MatVector(faces.size() );
+				MatVector images = new MatVector( faces.size() +1 );
 				int count =0;
+				
+				File fileBlack = faceDetectService.createBlackImage();
+				trainOne(labelsBuf, images, count, null, fileBlack);
+				count =1;
+				fileBlack.delete();
 				
 				for (Face face : faces) {
 					File image = convertFaceToFile(face);
 					File fileDetect = faceDetectService.resizeImage(image,face);
 					
-					String filename = fileDetect.getAbsolutePath();
-					Mat box_face = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
-					mappaFace.put(count, face.getId());
-					Integer label = count;
-					images.put(label, box_face);
-					labelsBuf.put(label, label);
+					trainOne(labelsBuf, images, count, face, fileDetect);
 					count++;
+					fileDetect.delete();
+					image.delete();
+						
 
 				}
 				faceRecognizer.train(images, labels);
@@ -166,7 +169,21 @@ public class FaceRecognizerService {
 			log.error("train", e);
 		}
 
-	} 
+	}
+
+private void trainOne(IntBuffer labelsBuf, MatVector images, int count, Face face, File fileDetect) {
+	String filename = fileDetect.getAbsolutePath();
+	Mat box_face = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
+	if(face==null){
+		mappaFace.put(count, null );
+	}
+	else{
+		mappaFace.put(count, face.getId());
+	}
+	Integer label = count;
+	images.put(label, box_face);
+	labelsBuf.put(label, label);
+} 
 	
 	/**
 	 * Cerca faccia nel sistema di catalogazione torna id face
